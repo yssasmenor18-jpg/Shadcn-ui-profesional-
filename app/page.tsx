@@ -49,6 +49,7 @@ import {
 } from "@/components/ui/table"
 
 import { ModeToggle } from "@/components/mode-toggle"
+import { DatePickerConPopover } from "@/components/date-picker-con-popover"
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -63,7 +64,7 @@ export default function DashboardPage() {
           <div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
             <a href="/" className="flex items-center gap-2 font-semibold">
               <Package className="h-6 w-6" />
-              <span className="">Acme Inc</span>
+              <span className="isasmendi-3d text-xl">Isasmendi</span>
             </a>
           </div>
           <div className="flex-1">
@@ -83,7 +84,7 @@ export default function DashboardPage() {
                 Orders
               </a>
               <a
-                href="#"
+                href="/dashboard/products"
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary"
               >
                 <Package className="h-4 w-4" />
@@ -127,7 +128,7 @@ export default function DashboardPage() {
                   className="flex items-center gap-2 text-lg font-semibold"
                 >
                   <Package className="h-6 w-6" />
-                  <span className="sr-only">Acme Inc</span>
+                  <span className="sr-only">Isasmendi</span>
                 </a>
                 <a
                   href="#"
@@ -179,6 +180,7 @@ export default function DashboardPage() {
               </div>
             </form>
           </div>
+          <DatePickerConPopover />
           <ModeToggle />
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

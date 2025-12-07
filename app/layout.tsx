@@ -18,6 +18,7 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner"
 
 // ... imports
 
@@ -36,8 +37,10 @@ export default function RootLayout({
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
+          themes={["light", "dark", "turquoise"]}
         >
           {children}
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>

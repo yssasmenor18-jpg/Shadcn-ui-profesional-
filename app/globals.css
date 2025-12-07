@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark *, .turquoise *));
 
 @theme inline {
   --color-background: var(--background);
@@ -112,11 +112,77 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.turquoise {
+  --background: oklch(0.25 0.04 210);
+  --foreground: oklch(0.95 0.02 210);
+  --card: oklch(0.3 0.04 210);
+  --card-foreground: oklch(0.95 0.02 210);
+  --popover: oklch(0.3 0.04 210);
+  --popover-foreground: oklch(0.95 0.02 210);
+  --primary: oklch(0.7 0.15 210);
+  --primary-foreground: oklch(0.2 0.04 210);
+  --secondary: oklch(0.35 0.04 210);
+  --secondary-foreground: oklch(0.95 0.02 210);
+  --muted: oklch(0.35 0.04 210);
+  --muted-foreground: oklch(0.75 0.02 210);
+  --accent: oklch(0.35 0.04 210);
+  --accent-foreground: oklch(0.95 0.02 210);
+  --destructive: oklch(0.6 0.2 20);
+  --border: oklch(0.4 0.04 210);
+  --input: oklch(0.4 0.04 210);
+  --ring: oklch(0.7 0.15 210);
+  --chart-1: oklch(0.7 0.15 210);
+  --chart-2: oklch(0.6 0.15 190);
+  --chart-3: oklch(0.5 0.15 230);
+  --chart-4: oklch(0.8 0.15 210);
+  --chart-5: oklch(0.9 0.15 210);
+  --sidebar: oklch(0.25 0.04 210);
+  --sidebar-foreground: oklch(0.95 0.02 210);
+  --sidebar-primary: oklch(0.7 0.15 210);
+  --sidebar-primary-foreground: oklch(0.2 0.04 210);
+  --sidebar-accent: oklch(0.35 0.04 210);
+  --sidebar-accent-foreground: oklch(0.95 0.02 210);
+  --sidebar-border: oklch(0.4 0.04 210);
+  --sidebar-ring: oklch(0.7 0.15 210);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/* Custom 3D Floating Effect for Isasmendi */
+.isasmendi-3d {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #e0faff;
+  text-shadow:
+    0 0 5px rgba(0, 242, 255, 0.8),
+    0 0 10px rgba(0, 242, 255, 0.5),
+    0 0 20px rgba(0, 242, 255, 0.3),
+    1px 1px 0 #00aaff,
+    2px 2px 0 #0088cc,
+    3px 3px 0 #006699,
+    4px 4px 0 #004466;
+  display: inline-block;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.isasmendi-3d:hover {
+  transform: translateY(-4px) scale(1.02);
+  text-shadow:
+    0 0 15px rgba(0, 242, 255, 1),
+    0 0 25px rgba(0, 242, 255, 0.7),
+    0 0 35px rgba(0, 242, 255, 0.5),
+    1px 1px 0 #00aaff,
+    2px 2px 0 #0088cc,
+    3px 3px 0 #006699,
+    4px 4px 0 #004466,
+    6px 6px 5px rgba(0, 0, 0, 0.2);
 }
