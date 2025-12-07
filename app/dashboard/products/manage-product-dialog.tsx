@@ -73,7 +73,7 @@ export function ManageProductDialog({
 
     const isEditing = !!product
 
-    const form = useForm<z.infer<typeof formSchema>>({
+    const form = useForm({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: product?.name || "",
@@ -209,7 +209,7 @@ export function ManageProductDialog({
                                     <FormItem>
                                         <FormLabel>Price</FormLabel>
                                         <FormControl>
-                                            <Input type="number" step="0.01" {...field} />
+                                            <Input type="number" step="0.01" {...field} value={field.value as number} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
@@ -222,7 +222,7 @@ export function ManageProductDialog({
                                     <FormItem>
                                         <FormLabel>Stock</FormLabel>
                                         <FormControl>
-                                            <Input type="number" {...field} />
+                                            <Input type="number" {...field} value={field.value as number} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
