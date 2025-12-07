@@ -158,11 +158,13 @@ export function ManageProductDialog({
                     {trigger}
                 </DialogTrigger>
             ) : (
-                <DialogTrigger asChild>
-                    <Button>
-                        <Plus className="mr-2 h-4 w-4" /> Add New Product
-                    </Button>
-                </DialogTrigger>
+                !isControlled && (
+                    <DialogTrigger asChild>
+                        <Button>
+                            <Plus className="mr-2 h-4 w-4" /> Add New Product
+                        </Button>
+                    </DialogTrigger>
+                )
             )}
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
