@@ -7,7 +7,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table"
-import { CreateProductDialog } from "./create-product-dialog"
+import { ManageProductDialog } from "./manage-product-dialog"
+import { ProductActions } from "./product-actions"
 
 export default async function ProductsPage() {
     const { data: products } = await supabase.from('products').select('*').order('created_at', { ascending: false })
@@ -16,7 +17,7 @@ export default async function ProductsPage() {
         <div className="flex flex-col gap-4 p-4 lg:gap-6 lg:p-6">
             <div className="flex items-center justify-between">
                 <h1 className="text-lg font-semibold md:text-2xl">Products</h1>
-                <CreateProductDialog />
+                <ManageProductDialog />
             </div>
             <div className="rounded-md border">
                 <Table>
@@ -27,6 +28,7 @@ export default async function ProductsPage() {
                             <TableHead>Price</TableHead>
                             <TableHead>Stock</TableHead>
                             <TableHead>Type</TableHead>
+                            <TableHead className="w-[70px]">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -37,11 +39,14 @@ export default async function ProductsPage() {
                                 <TableCell>${product.price}</TableCell>
                                 <TableCell>{product.stock}</TableCell>
                                 <TableCell>{product.is_dtf ? 'DTF' : 'Tote Bag'}</TableCell>
+                                <TableCell>
+                                    <ProductActions product={product} />
+                                </TableCell>
                             </TableRow>
                         ))}
-                        {products?.length === 0 && (
+                        {(!products || products.length === 0) && (
                             <TableRow>
-                                <TableCell colSpan={5} className="text-center h-24">
+                                <TableCell colSpan={6} className="text-center h-24">
                                     No products found.
                                 </TableCell>
                             </TableRow>

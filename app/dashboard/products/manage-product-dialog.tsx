@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -28,6 +28,16 @@ import {
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 
+export interface Product {
+    id: string
+    name: string
+    description?: string
+    price: number
+    stock: number
+    is_dtf: boolean
+    created_at?: string
+}
+
 const formSchema = z.object({
     name: z.string().min(2, {
         message: "Name must be at least 2 characters.",
@@ -40,24 +50,71 @@ const formSchema = z.object({
     is_dtf: z.boolean().default(false),
 })
 
-export function CreateProductDialog({ onProductCreated }: { onProductCreated?: () => void }) {
-    const [open, setOpen] = useState(false)
+interface ManageProductDialogProps {
+    onProductSaved?: () => void
+    product?: Product
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
+    trigger?: React.ReactNode
+}
+
+export function ManageProductDialog({
+    onProductSaved,
+    product,
+    open: controlledOpen,
+    onOpenChange: setControlledOpen,
+    trigger
+}: ManageProductDialogProps) {
+    const [internalOpen, setInternalOpen] = useState(false)
+
+    const isControlled = controlledOpen !== undefined
+    const open = isControlled ? controlledOpen : internalOpen
+    const setOpen = isControlled ? setControlledOpen! : setInternalOpen
+
+    const isEditing = !!product
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            name: "",
-            description: "",
-            price: 0,
-            stock: 0,
-            is_dtf: false,
+            name: product?.name || "",
+            description: product?.description || "",
+            price: product?.price || 0,
+            stock: product?.stock || 0,
+            is_dtf: product?.is_dtf || false,
         },
     })
 
+    // Update form values when product prop changes
+    useEffect(() => {
+        if (product) {
+            form.reset({
+                name: product.name,
+                description: product.description || "",
+                price: product.price,
+                stock: product.stock,
+                is_dtf: product.is_dtf,
+            })
+        } else {
+            form.reset({
+                name: "",
+                description: "",
+                price: 0,
+                stock: 0,
+                is_dtf: false,
+            })
+        }
+    }, [product, form])
+
     async function onSubmit(values: z.infer<typeof formSchema>) {
         try {
-            const response = await fetch('/api/products', {
-                method: 'POST',
+            const url = isEditing
+                ? `/api/products/${product.id}`
+                : '/api/products'
+
+            const method = isEditing ? 'PUT' : 'POST'
+
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -65,22 +122,26 @@ export function CreateProductDialog({ onProductCreated }: { onProductCreated?: (
             })
 
             if (!response.ok) {
-                throw new Error('Failed to create product')
+                throw new Error(isEditing ? 'Failed to update product' : 'Failed to create product')
             }
 
-            toast.success("Product created", {
-                description: `${values.name} has been added to your catalog.`,
+            toast.success(isEditing ? "Product updated" : "Product created", {
+                description: isEditing
+                    ? `${values.name} has been updated.`
+                    : `${values.name} has been added to your catalog.`,
             })
 
             setOpen(false)
-            form.reset()
-
-            if (onProductCreated) {
-                onProductCreated()
+            if (!isEditing) {
+                form.reset()
             }
-            // Recargar la pagina para ver el nuevo producto
-            window.location.reload();
 
+            if (onProductSaved) {
+                onProductSaved()
+            }
+
+            // Reload page to reflect changes
+            window.location.reload();
 
         } catch (error) {
             console.error(error)
@@ -92,16 +153,24 @@ export function CreateProductDialog({ onProductCreated }: { onProductCreated?: (
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-                <Button>
-                    <Plus className="mr-2 h-4 w-4" /> Add New Product
-                </Button>
-            </DialogTrigger>
+            {trigger ? (
+                <DialogTrigger asChild>
+                    {trigger}
+                </DialogTrigger>
+            ) : (
+                <DialogTrigger asChild>
+                    <Button>
+                        <Plus className="mr-2 h-4 w-4" /> Add New Product
+                    </Button>
+                </DialogTrigger>
+            )}
             <DialogContent className="sm:max-w-[425px]">
                 <DialogHeader>
-                    <DialogTitle>Add New Product</DialogTitle>
+                    <DialogTitle>{isEditing ? "Edit Product" : "Add New Product"}</DialogTitle>
                     <DialogDescription>
-                        Create a new product for your catalog. Click save when you're done.
+                        {isEditing
+                            ? "Make changes to your product here. Click save when you're done."
+                            : "Create a new product for your catalog. Click save when you're done."}
                     </DialogDescription>
                 </DialogHeader>
                 <Form {...form}>
