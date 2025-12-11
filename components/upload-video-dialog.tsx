@@ -77,7 +77,7 @@ export function UploadVideoDialog() {
                     video_url: videoUrl,
                     thumbnail_url: thumbUrl,
                     user_id: user.id
-                })
+                } as any)
 
             if (dbError) throw dbError
 
