@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/server'
 
 export async function PUT(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const supabase = await createClient()
     try {
+        const { id } = await params
         const body = await request.json()
         const { name, email, phone, address } = body
 
@@ -16,7 +18,7 @@ export async function PUT(
         const { data, error } = await supabase
             .from('customers')
             .update({ name, email, phone, address })
-            .eq('id', params.id)
+            .eq('id', id)
             .select()
 
         if (error) {
@@ -38,13 +40,15 @@ export async function PUT(
 
 export async function DELETE(
     request: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const supabase = await createClient()
     try {
+        const { id } = await params
         const { error } = await supabase
             .from('customers')
             .delete()
-            .eq('id', params.id)
+            .eq('id', id)
 
         if (error) {
             console.error('Supabase Error:', error)

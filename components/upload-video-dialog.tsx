@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
@@ -22,6 +22,23 @@ export function UploadVideoDialog() {
     const [isLoading, setIsLoading] = useState(false)
     const router = useRouter()
     const supabase = createClient()
+    const [categories, setCategories] = useState<string[]>([])
+    const [isNewCategory, setIsNewCategory] = useState(false)
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await fetch('/api/categories')
+                if (response.ok) {
+                    const data = await response.json()
+                    setCategories(data)
+                }
+            } catch (error) {
+                console.error('Error fetching categories:', error)
+            }
+        }
+        fetchCategories()
+    }, [])
 
     const handleUpload = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -33,6 +50,9 @@ export function UploadVideoDialog() {
             const description = formData.get('description') as string
             const videoFile = (formData.get('video') as File)
             const thumbnailFile = (formData.get('thumbnail') as File)
+            const category = isNewCategory
+                ? (formData.get('custom-category') as string)
+                : (formData.get('category') as string)
 
             if (!videoFile || !thumbnailFile) {
                 alert('Por favor selecciona un video y una portada')
@@ -74,10 +94,11 @@ export function UploadVideoDialog() {
                 .insert({
                     title,
                     description,
+                    category,
                     video_url: videoUrl,
                     thumbnail_url: thumbUrl,
                     user_id: user.id
-                } as any)
+                })
 
             if (dbError) throw dbError
 
@@ -113,6 +134,47 @@ export function UploadVideoDialog() {
                         <Label htmlFor="title">Título del Video</Label>
                         <Input id="title" name="title" required placeholder="Ej: Mi viaje épico" className="bg-slate-800 border-slate-700 focus:ring-indigo-500" />
                     </div>
+
+                    <div className="grid gap-2">
+                        <Label htmlFor="category">Categoría</Label>
+                        {isNewCategory ? (
+                            <div className="flex gap-2 animate-in fade-in slide-in-from-left-4 duration-300">
+                                <Input
+                                    id="custom-category"
+                                    name="custom-category"
+                                    placeholder="Escribe la nueva categoría..."
+                                    className="bg-slate-800 border-slate-700 focus:ring-indigo-500"
+                                    required
+                                />
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => setIsNewCategory(false)}
+                                    className="border-slate-700 hover:bg-slate-800"
+                                >
+                                    Cancelar
+                                </Button>
+                            </div>
+                        ) : (
+                            <select
+                                id="category"
+                                name="category"
+                                className="flex h-10 w-full rounded-md border border-slate-700 bg-slate-800 px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-50"
+                                onChange={(e) => {
+                                    if (e.target.value === 'new') setIsNewCategory(true);
+                                }}
+                                defaultValue=""
+                                required
+                            >
+                                <option value="" disabled>Selecciona una categoría...</option>
+                                {categories.map((cat) => (
+                                    <option key={cat} value={cat}>{cat}</option>
+                                ))}
+                                <option value="new" className="text-indigo-400 font-semibold">+ Crear Nueva Categoría</option>
+                            </select>
+                        )}
+                    </div>
+
                     <div className="grid gap-2">
                         <Label htmlFor="description">Descripción</Label>
                         <Input id="description" name="description" placeholder="Cuéntanos de qué trata..." className="bg-slate-800 border-slate-700 focus:ring-indigo-500" />

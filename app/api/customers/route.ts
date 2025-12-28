@@ -34,7 +34,7 @@ export async function POST(request: Request) {
         const { data, error } = await supabase
             .from('customers')
             .insert([
-                { name, email, phone, address } as any
+                { name, email, phone, address }
             ])
             .select()
 

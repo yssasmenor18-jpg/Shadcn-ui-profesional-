@@ -32,7 +32,40 @@ export async function middleware(request: NextRequest) {
         data: { user },
     } = await supabase.auth.getUser()
 
-    // Protect dashboard routes
+    // --- API AUDITING (Guardián) ---
+    if (request.nextUrl.pathname.startsWith('/api')) {
+        const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown'
+        const userAgent = request.headers.get('user-agent') || 'unknown'
+
+        // Log request to api_logs table
+        // Note: Using await here ensures the log is recorded before the request proceeds,
+        // which is safer for auditing but adds small latency.
+        try {
+            await supabase.from('api_logs').insert({
+                method: request.method,
+                url: request.nextUrl.pathname,
+                user_id: user?.id,
+                ip_address: ip,
+                user_agent: userAgent
+            })
+        } catch (error) {
+            console.error('Audit Log Error:', error)
+        }
+
+        // --- API AUTH PROTECTION ---
+        // Protected routes (everything except auth-related API or public ones)
+        const isPublicApi = request.nextUrl.pathname.startsWith('/api/auth') ||
+            request.nextUrl.pathname === '/api/public' // example
+
+        if (!user && !isPublicApi) {
+            return NextResponse.json(
+                { error: 'Unauthorized access to API' },
+                { status: 401 }
+            )
+        }
+    }
+
+    // --- DASHBOARD PROTECTION ---
     if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
@@ -42,9 +75,16 @@ export async function middleware(request: NextRequest) {
     // Redirect to dashboard if already logged in and trying to access login
     if (user && request.nextUrl.pathname === '/login') {
         const url = request.nextUrl.clone()
-        url.pathname = '/'
+        url.pathname = '/dashboard' // Fixed redirect to dashboard
         return NextResponse.redirect(url)
     }
+
+    // --- SECURITY HEADERS ---
+    supabaseResponse.headers.set('X-Content-Type-Options', 'nosniff')
+    supabaseResponse.headers.set('X-Frame-Options', 'DENY')
+    supabaseResponse.headers.set('X-XSS-Protection', '1; mode=block')
+    supabaseResponse.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+    supabaseResponse.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
 
     return supabaseResponse
 }

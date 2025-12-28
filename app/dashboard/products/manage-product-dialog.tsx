@@ -50,6 +50,8 @@ const formSchema = z.object({
     is_dtf: z.boolean().default(false),
 })
 
+type FormValues = z.infer<typeof formSchema>
+
 interface ManageProductDialogProps {
     onProductSaved?: () => void
     product?: Product
@@ -73,8 +75,8 @@ export function ManageProductDialog({
 
     const isEditing = !!product
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<FormValues>({
+        resolver: zodResolver(formSchema) as any,
         defaultValues: {
             name: product?.name || "",
             description: product?.description || "",
@@ -105,7 +107,7 @@ export function ManageProductDialog({
         }
     }, [product, form])
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: FormValues) {
         try {
             const url = isEditing
                 ? `/api/products/${product.id}`

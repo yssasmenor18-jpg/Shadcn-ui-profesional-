@@ -68,6 +68,7 @@ export default async function Home() {
   const { data: realVideos } = await supabase
     .from('videos')
     .select('*')
+    .order('is_hero', { ascending: false })
     .order('created_at', { ascending: false })
 
   // Combinar videos reales con placeholders
@@ -78,9 +79,9 @@ export default async function Home() {
     ))
   )
 
-  // Separar el Hero Video (el primero) del resto de la galería
+  // El primero será el hero (ya sea el marcado manualmente o el más reciente)
   const heroVideo = uniqueVideos[0]
-  const galleryVideos = uniqueVideos.slice(1) // El resto de videos
+  const galleryVideos = uniqueVideos.slice(1)
 
   return (
     <div className="min-h-screen w-full bg-black flex flex-col relative overflow-x-hidden">

@@ -46,6 +46,13 @@ const formSchema = z.object({
     address: z.string().optional(),
 })
 
+interface FormValues {
+    name: string
+    email: string
+    phone?: string
+    address?: string
+}
+
 interface ManageCustomerDialogProps {
     onCustomerSaved?: () => void
     customer?: Customer
@@ -69,8 +76,8 @@ export function ManageCustomerDialog({
 
     const isEditing = !!customer
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<FormValues>({
+        resolver: zodResolver(formSchema) as any,
         defaultValues: {
             name: customer?.name || "",
             email: customer?.email || "",
@@ -98,7 +105,7 @@ export function ManageCustomerDialog({
         }
     }, [customer, form])
 
-    async function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: FormValues) {
         try {
             const url = isEditing
                 ? `/api/customers/${customer.id}`

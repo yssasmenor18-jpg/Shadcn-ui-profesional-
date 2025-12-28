@@ -1,9 +1,11 @@
+import { createClient } from '@/lib/supabase/server'
 import {
     Activity,
     CreditCard,
     DollarSign,
     MoreHorizontal,
     Users,
+    Video,
 } from "lucide-react"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -24,59 +26,66 @@ import {
     TableRow,
 } from "@/components/ui/table"
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+    const supabase = await createClient()
+
+    // Fetch real counts
+    const { count: productsCount } = await supabase.from('products').select('*', { count: 'exact', head: true })
+    const { count: customersCount } = await supabase.from('customers').select('*', { count: 'exact', head: true })
+    const { count: videosCount } = await supabase.from('videos').select('*', { count: 'exact', head: true })
+
     return (
-        <div className="flex flex-1 flex-col gap-4 p-4 lg:gap-6 lg:p-6">
+        <div className="flex flex-1 flex-col gap-4 lg:gap-6">
             <div className="grid gap-4 md:grid-cols-2 md:gap-8 lg:grid-cols-4">
-                <Card>
+                <Card className="glass shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Total Revenue
+                            Productos
                         </CardTitle>
-                        <DollarSign className="h-4 w-4 text-muted-foreground" />
+                        <CreditCard className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">$45,231.89</div>
+                        <div className="text-2xl font-bold">{productsCount || 0}</div>
                         <p className="text-xs text-muted-foreground">
-                            +20.1% from last month
+                            Total de items en catálogo
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="glass shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                         <CardTitle className="text-sm font-medium">
-                            Subscriptions
+                            Clientes
                         </CardTitle>
                         <Users className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">+2350</div>
+                        <div className="text-2xl font-bold">{customersCount || 0}</div>
                         <p className="text-xs text-muted-foreground">
-                            +180.1% from last month
+                            Clientes registrados
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="glass shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Sales</CardTitle>
-                        <CreditCard className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">Videos</CardTitle>
+                        <Video className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">+12,234</div>
+                        <div className="text-2xl font-bold">{videosCount || 0}</div>
                         <p className="text-xs text-muted-foreground">
-                            +19% from last month
+                            Videos multimedia
                         </p>
                     </CardContent>
                 </Card>
-                <Card>
+                <Card className="glass shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <CardTitle className="text-sm font-medium">Active Now</CardTitle>
-                        <Activity className="h-4 w-4 text-muted-foreground" />
+                        <CardTitle className="text-sm font-medium">Revenue (Falso)</CardTitle>
+                        <DollarSign className="h-4 w-4 text-muted-foreground" />
                     </CardHeader>
                     <CardContent>
-                        <div className="text-2xl font-bold">+573</div>
+                        <div className="text-2xl font-bold">$45,231</div>
                         <p className="text-xs text-muted-foreground">
-                            +201 since last hour
+                            +20.1% est.
                         </p>
                     </CardContent>
                 </Card>
