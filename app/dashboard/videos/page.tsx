@@ -61,7 +61,7 @@ export default async function VideosPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {videos?.map((video) => (
+                            {videos?.map((video: any) => (
                                 <TableRow key={video.id} className="group hover:bg-primary/5 transition-colors border-primary/5">
                                     <TableCell className="py-4">
                                         <div className="flex items-center gap-4">

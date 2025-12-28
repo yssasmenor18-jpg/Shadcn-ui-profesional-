@@ -3,9 +3,10 @@ import { NextResponse } from 'next/server'
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    props: { params: Promise<{ id: string }> }
 ) {
     try {
+        const params = await props.params
         const supabase = await createClient()
         const { data: { user } } = await supabase.auth.getUser()
 
@@ -35,9 +36,10 @@ export async function PATCH(
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { id: string } }
+    props: { params: Promise<{ id: string }> }
 ) {
     try {
+        const params = await props.params
         const supabase = await createClient()
         const { data: { user } } = await supabase.auth.getUser()
 
