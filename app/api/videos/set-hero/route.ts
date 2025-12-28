@@ -12,9 +12,6 @@ export async function POST(req: Request) {
             return new NextResponse('Unauthorized', { status: 401 })
         }
 
-        // Aquí podrías añadir una verificación extra de rol si es necesario
-        // if (user.role !== 'admin') ...
-
         const { videoId } = await req.json()
 
         if (!videoId) {
@@ -24,11 +21,10 @@ export async function POST(req: Request) {
         // 1. Quitar el estado de hero a cualquier video que lo tenga
         const { error: resetError } = await supabase
             .from('videos')
-            .update({ is_hero: false } as any) // Type casting to bypass strict type checking if column exists but types are outdated
+            .update({ is_hero: false } as any) // Fix type error if column types are not synced
             .eq('is_hero', true)
 
         if (resetError) {
-            console.error('Error resetting hero video:', resetError)
             return new NextResponse('Error resetting hero video', { status: 500 })
         }
 
@@ -39,13 +35,11 @@ export async function POST(req: Request) {
             .eq('id', videoId)
 
         if (updateError) {
-            console.error('Error updating hero video:', updateError)
             return new NextResponse('Error updating hero video', { status: 500 })
         }
 
         return NextResponse.json({ success: true })
     } catch (error) {
-        console.error('[SET_HERO_ERROR]', error)
         return new NextResponse('Internal Error', { status: 500 })
     }
 }
