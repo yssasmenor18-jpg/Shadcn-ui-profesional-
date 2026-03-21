@@ -14,19 +14,20 @@ export async function GET(req: Request) {
         // if (user.role !== 'admin') ...
 
         const { data: logs, error } = await supabase
-            .from('audit_logs' as any)
+            .from('api_logs' as any)
             .select('*')
             .order('created_at', { ascending: false })
             .limit(100)
 
         if (error) {
-            console.error('Error fetching audit logs:', error)
-            return new NextResponse('Error fetching logs', { status: 500 })
+            console.error('Error fetching API logs:', error)
+            return NextResponse.json({ error: 'Error fetching logs', details: error.message }, { status: 500 })
         }
 
         return NextResponse.json(logs)
-    } catch (error) {
-        return new NextResponse('Internal Error', { status: 500 })
+    } catch (error: any) {
+        console.error('Internal API Error (Audit GET):', error)
+        return NextResponse.json({ error: 'Internal Error', details: error.message }, { status: 500 })
     }
 }
 
@@ -36,13 +37,13 @@ export async function POST(req: Request) {
         const { data: { user } } = await supabase.auth.getUser()
 
         if (!user) {
-            return new NextResponse('Unauthorized', { status: 401 })
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
         const { action, details } = await req.json()
 
         const { error } = await supabase
-            .from('audit_logs' as any)
+            .from('api_logs' as any)
             .insert({
                 user_id: user.id,
                 action,
@@ -51,11 +52,14 @@ export async function POST(req: Request) {
             })
 
         if (error) {
-            return new NextResponse('Error creating log', { status: 500 })
+            console.error('Error creating log:', error)
+            return NextResponse.json({ error: 'Error creating log', details: error.message }, { status: 500 })
         }
 
         return NextResponse.json({ success: true })
-    } catch (error) {
-        return new NextResponse('Internal Error', { status: 500 })
+    } catch (error: any) {
+        console.error('Internal API Error (Audit POST):', error)
+        return NextResponse.json({ error: 'Internal Error', details: error.message }, { status: 500 })
     }
 }
+

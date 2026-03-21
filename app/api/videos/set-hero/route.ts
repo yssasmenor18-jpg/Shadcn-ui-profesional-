@@ -12,20 +12,21 @@ export async function POST(req: Request) {
             return new NextResponse('Unauthorized', { status: 401 })
         }
 
-        const { videoId } = await req.json()
+        const { id: videoId } = await req.json()
 
         if (!videoId) {
-            return new NextResponse('Video ID is required', { status: 400 })
+            return NextResponse.json({ error: 'Video ID is required' }, { status: 400 })
         }
 
         // 1. Quitar el estado de hero a cualquier video que lo tenga
         const { error: resetError } = await supabase
             .from('videos')
-            .update({ is_hero: false } as any) // Fix type error if column types are not synced
+            .update({ is_hero: false } as any)
             .eq('is_hero', true)
 
         if (resetError) {
-            return new NextResponse('Error resetting hero video', { status: 500 })
+            console.error('Error resetting hero video:', resetError)
+            return NextResponse.json({ error: 'Error resetting hero video', details: resetError.message }, { status: 500 })
         }
 
         // 2. Establecer el nuevo hero
@@ -35,11 +36,14 @@ export async function POST(req: Request) {
             .eq('id', videoId)
 
         if (updateError) {
-            return new NextResponse('Error updating hero video', { status: 500 })
+            console.error('Error updating hero video:', updateError)
+            return NextResponse.json({ error: 'Error updating hero video', details: updateError.message }, { status: 500 })
         }
 
         return NextResponse.json({ success: true })
-    } catch (error) {
-        return new NextResponse('Internal Error', { status: 500 })
+    } catch (error: any) {
+        console.error('Internal API Error (set-hero):', error)
+        return NextResponse.json({ error: 'Internal Error', details: error.message }, { status: 500 })
     }
 }
+

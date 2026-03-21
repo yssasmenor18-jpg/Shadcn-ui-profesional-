@@ -26,7 +26,7 @@ export function VideoGallery({ videos }: { videos: Video[] }) {
     // Adaptamos el formato de videos para FocusCards
     const cards = videos.map((v) => ({
         title: v.title,
-        src: v.thumbnail_url,
+        src: v.thumbnail_url || 'https://images.unsplash.com/photo-1485846234645-a62644ef7467?q=80&w=2000&auto=format&fit=crop', // Imagen de video genérica
         original: v,
         category: v.category || 'General'
     }))

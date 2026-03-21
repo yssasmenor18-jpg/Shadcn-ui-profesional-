@@ -11,11 +11,20 @@ export async function PATCH(
         const { data: { user } } = await supabase.auth.getUser()
 
         if (!user) {
-            return new NextResponse('Unauthorized', { status: 401 })
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
         const { id } = params
         const values = await req.json()
+
+        // Si estamos poniendo este video como hero, quitar el hero a los demás
+        // debido a la restricción de clave única is_hero=true
+        if (values.is_hero) {
+            await supabase
+                .from('videos')
+                .update({ is_hero: false } as any)
+                .eq('is_hero', true)
+        }
 
         const { data: video, error } = await supabase
             .from('videos')
@@ -25,14 +34,17 @@ export async function PATCH(
             .single()
 
         if (error) {
-            return new NextResponse('Error updating video', { status: 500 })
+            console.error('Error updating video:', error)
+            return NextResponse.json({ error: 'Error updating video', details: error.message }, { status: 500 })
         }
 
         return NextResponse.json(video)
-    } catch (error) {
-        return new NextResponse('Internal Error', { status: 500 })
+    } catch (error: any) {
+        console.error('Internal API Error (PATCH):', error)
+        return NextResponse.json({ error: 'Internal Error', details: error.message }, { status: 500 })
     }
 }
+
 
 export async function DELETE(
     req: Request,
@@ -44,7 +56,7 @@ export async function DELETE(
         const { data: { user } } = await supabase.auth.getUser()
 
         if (!user) {
-            return new NextResponse('Unauthorized', { status: 401 })
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
         const { id } = params
@@ -55,11 +67,14 @@ export async function DELETE(
             .eq('id', id)
 
         if (error) {
-            return new NextResponse('Error deleting video', { status: 500 })
+            console.error('Error deleting video:', error)
+            return NextResponse.json({ error: 'Error deleting video', details: error.message }, { status: 500 })
         }
 
         return NextResponse.json({ success: true })
-    } catch (error) {
-        return new NextResponse('Internal Error', { status: 500 })
+    } catch (error: any) {
+        console.error('Internal API Error (DELETE):', error)
+        return NextResponse.json({ error: 'Internal Error', details: error.message }, { status: 500 })
     }
 }
+
