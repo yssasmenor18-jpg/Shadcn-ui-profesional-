@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
+import { sanitizeFilename } from '@/lib/utils'
 import {
     Dialog,
     DialogContent,
@@ -69,7 +70,8 @@ export function UploadVideoDialog() {
             }
 
             // 2. Subir Video
-            const videoName = `${Date.now()}-${videoFile.name}`
+            const sanitizedVideoName = sanitizeFilename(videoFile.name)
+            const videoName = `${Date.now()}-${sanitizedVideoName}`
             const { data: videoData, error: videoError } = await supabase.storage
                 .from('videos')
                 .upload(videoName, videoFile)
@@ -77,7 +79,8 @@ export function UploadVideoDialog() {
             if (videoError) throw videoError
 
             // 3. Subir Thumbnail
-            const thumbName = `${Date.now()}-${thumbnailFile.name}`
+            const sanitizedThumbName = sanitizeFilename(thumbnailFile.name)
+            const thumbName = `${Date.now()}-${sanitizedThumbName}`
             const { data: thumbData, error: thumbError } = await supabase.storage
                 .from('thumbnails')
                 .upload(thumbName, thumbnailFile)

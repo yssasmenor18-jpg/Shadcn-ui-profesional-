@@ -24,28 +24,46 @@ export async function GET(req: Request) {
         const { data: videos, error } = await query
 
         if (error) {
-            return new NextResponse('Error fetching videos', { status: 500 })
+            console.error('Fetch Videos Error:', error)
+            return NextResponse.json({ error: 'Error fetching videos' }, { status: 500 })
         }
 
         return NextResponse.json(videos)
     } catch (error) {
-        return new NextResponse('Internal Error', { status: 500 })
+        console.error('Internal API Error (GET):', error)
+        return NextResponse.json({ error: 'Internal Error' }, { status: 500 })
     }
 }
 
 export async function POST(req: Request) {
     try {
         const supabase = await createClient()
-        const { data: { user } } = await supabase.auth.getUser()
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
 
-        if (!user) {
-            return new NextResponse('Unauthorized', { status: 401 })
+        if (authError || !user) {
+            console.error('Auth Error:', authError)
+            return NextResponse.json({ error: 'Debes iniciar sesión' }, { status: 401 })
         }
 
         const body = await req.json()
         const { title, description, video_url, thumbnail_url, category, is_hero } = body
 
-        const { data: video, error } = await supabase
+        console.log('Intentando insertar video para usuario:', user.id)
+
+        // Si el nuevo video es hero, debemos quitar el hero de los demás primero
+        if (is_hero) {
+            const { error: updateError } = await supabase
+                .from('videos')
+                .update({ is_hero: false })
+                .eq('is_hero', true)
+            
+            if (updateError) {
+                console.warn('Advertencia al resetear hero videos:', updateError.message)
+                // No detenemos el proceso, pero lo logueamos
+            }
+        }
+
+        const { data: video, error: dbError } = await supabase
             .from('videos')
             .insert({
                 title,
@@ -53,18 +71,35 @@ export async function POST(req: Request) {
                 video_url,
                 thumbnail_url,
                 category,
-                is_hero: is_hero || false,
+                is_hero: !!is_hero,
                 user_id: user.id
             })
             .select()
             .single()
 
-        if (error) {
-            return new NextResponse('Error creating video', { status: 500 })
+        if (dbError) {
+            console.error('🔴 Error de Supabase al insertar video:', dbError)
+            return NextResponse.json(
+                { 
+                    error: 'Error al crear el video en la base de datos', 
+                    details: dbError.message,
+                    code: dbError.code 
+                },
+                { status: 500 }
+            )
         }
 
         return NextResponse.json(video)
-    } catch (error) {
-        return new NextResponse('Internal Error', { status: 500 })
+    } catch (error: any) {
+        console.error('💥 Error interno en API /api/videos:', error)
+        return NextResponse.json(
+            { 
+                error: 'Error interno del servidor', 
+                details: error.message || 'Error desconocido' 
+            },
+            { status: 500 }
+        )
     }
 }
+
+

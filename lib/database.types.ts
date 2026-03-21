@@ -77,6 +77,7 @@ export type Database = {
                     created_at: string | null
                     description: string | null
                     id: string
+                    is_hero: boolean | null
                     thumbnail_url: string
                     title: string
                     user_id: string | null
@@ -87,6 +88,7 @@ export type Database = {
                     created_at?: string | null
                     description?: string | null
                     id?: string
+                    is_hero?: boolean | null
                     thumbnail_url: string
                     title: string
                     user_id?: string | null
@@ -97,6 +99,7 @@ export type Database = {
                     created_at?: string | null
                     description?: string | null
                     id?: string
+                    is_hero?: boolean | null
                     thumbnail_url?: string
                     title?: string
                     user_id?: string | null

@@ -14,6 +14,7 @@ import {
 } from "lucide-react"
 import { Switch } from "@/components/ui/switch"
 import { toast } from "sonner"
+import { sanitizeFilename } from "@/lib/utils"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -92,7 +93,8 @@ export function ManageVideoDialog({
 
             // 2. Subir Video si hay archivo nuevo
             if (videoFile && videoFile.size > 0) {
-                const videoName = `${Date.now()}-${videoFile.name}`
+                const sanitizedVideoName = sanitizeFilename(videoFile.name)
+                const videoName = `${Date.now()}-${sanitizedVideoName}`
                 const { error: videoError } = await supabase.storage
                     .from('videos')
                     .upload(videoName, videoFile)
@@ -102,7 +104,8 @@ export function ManageVideoDialog({
 
             // 3. Subir Thumbnail si hay archivo nuevo
             if (thumbnailFile && thumbnailFile.size > 0) {
-                const thumbName = `${Date.now()}-${thumbnailFile.name}`
+                const sanitizedThumbName = sanitizeFilename(thumbnailFile.name)
+                const thumbName = `${Date.now()}-${sanitizedThumbName}`
                 const { error: thumbError } = await supabase.storage
                     .from('thumbnails')
                     .upload(thumbName, thumbnailFile)
@@ -116,7 +119,7 @@ export function ManageVideoDialog({
 
             // 4. Guardar en Base de Datos
             const url = isEditing ? `/api/videos/${video.id}` : '/api/videos'
-            const method = isEditing ? 'PUT' : 'POST'
+            const method = isEditing ? 'PATCH' : 'POST'
 
             const response = await fetch(url, {
                 method: method,
@@ -136,16 +139,8 @@ export function ManageVideoDialog({
                 throw new Error(errorData.error || 'Error al guardar el video')
             }
 
-            const savedVideo = await response.json()
+            // const savedVideo = await response.json() // Not really needed if we just refresh
 
-            // 5. Es importante forzar el set-hero si está marcado
-            if (isHero) {
-                await fetch('/api/videos/set-hero', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ id: isEditing ? video.id : savedVideo.id }),
-                })
-            }
 
             toast.success(isEditing ? "Video actualizado" : "Video publicado", {
                 description: `${title} se ha guardado correctamente.`
