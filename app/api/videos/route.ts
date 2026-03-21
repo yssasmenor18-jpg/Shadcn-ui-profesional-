@@ -45,7 +45,14 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Debes iniciar sesión' }, { status: 401 })
         }
 
-        const body = await req.json()
+        let body;
+        try {
+            body = await req.json();
+        } catch (e) {
+            console.error('❌ Error parseando JSON del body:', e);
+            return NextResponse.json({ error: 'Cuerpo de solicitud inválido (Invalid request body)' }, { status: 400 });
+        }
+
         const { title, description, video_url, thumbnail_url, category, is_hero } = body
 
         console.log('Intentando insertar video para usuario:', user.id)
@@ -59,7 +66,6 @@ export async function POST(req: Request) {
             
             if (updateError) {
                 console.warn('Advertencia al resetear hero videos:', updateError.message)
-                // No detenemos el proceso, pero lo logueamos
             }
         }
 
@@ -81,7 +87,7 @@ export async function POST(req: Request) {
             console.error('🔴 Error de Supabase al insertar video:', dbError)
             return NextResponse.json(
                 { 
-                    error: 'Error al crear el video en la base de datos', 
+                    error: 'Error al crear el video (Error creating video)', 
                     details: dbError.message,
                     code: dbError.code 
                 },
@@ -91,10 +97,10 @@ export async function POST(req: Request) {
 
         return NextResponse.json(video)
     } catch (error: any) {
-        console.error('💥 Error interno en API /api/videos:', error)
+        console.error('💥 Error crítico en /api/videos:', error)
         return NextResponse.json(
             { 
-                error: 'Error interno del servidor', 
+                error: 'Error interno del servidor (Internal server error)', 
                 details: error.message || 'Error desconocido' 
             },
             { status: 500 }

@@ -135,8 +135,19 @@ export function ManageVideoDialog({
             })
 
             if (!response.ok) {
-                const errorData = await response.json()
-                throw new Error(errorData.error || 'Error al guardar el video')
+                let errorMessage = 'Error al guardar el video';
+                try {
+                    const text = await response.text();
+                    try {
+                        const errorData = JSON.parse(text);
+                        errorMessage = errorData.error || errorMessage;
+                    } catch {
+                        errorMessage = text || errorMessage;
+                    }
+                } catch (e) {
+                    errorMessage = 'Error de comunicación con el servidor';
+                }
+                throw new Error(errorMessage);
             }
 
             // const savedVideo = await response.json() // Not really needed if we just refresh
