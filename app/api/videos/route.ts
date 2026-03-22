@@ -58,14 +58,17 @@ export async function POST(req: Request) {
         console.log('Intentando insertar video para usuario:', user.id)
 
         // Si el nuevo video es hero, debemos quitar el hero de los demás primero
+        // LIMITAR EL UPDATE SOLO A LOS VIDEOS DE ESTE USUARIO PARA EVITAR ERRORES DE RLS
         if (is_hero) {
+            console.log('🔄 Marcando video como hero, desactivando antiguos para el usuario:', user.id);
             const { error: updateError } = await supabase
                 .from('videos')
                 .update({ is_hero: false })
-                .eq('is_hero', true)
+                .match({ is_hero: true, user_id: user.id });
             
             if (updateError) {
-                console.warn('Advertencia al resetear hero videos:', updateError.message)
+                console.warn('⚠️ Advertencia al resetear hero videos:', updateError.message);
+                // No detenemos el proceso por el momento para ver si el insert funciona
             }
         }
 
