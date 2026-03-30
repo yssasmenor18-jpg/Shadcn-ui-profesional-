@@ -18,11 +18,8 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'Video ID is required' }, { status: 400 })
         }
 
-        // 1. Quitar el estado de hero a cualquier video que lo tenga
-        const { error: resetError } = await supabase
-            .from('videos')
-            .update({ is_hero: false } as any)
-            .eq('is_hero', true)
+        // 1. Quitar el estado de hero a cualquier video que lo tenga globalmente, saltando RLS
+        const { error: resetError } = await supabase.rpc('unset_hero_videos');
 
         if (resetError) {
             console.error('Error resetting hero video:', resetError)

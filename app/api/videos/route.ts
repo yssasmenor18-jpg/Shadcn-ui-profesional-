@@ -60,11 +60,8 @@ export async function POST(req: Request) {
         // Si el nuevo video es hero, debemos quitar el hero de los demás primero
         // LIMITAR EL UPDATE SOLO A LOS VIDEOS DE ESTE USUARIO PARA EVITAR ERRORES DE RLS
         if (is_hero) {
-            console.log('🔄 Marcando video como hero, desactivando antiguos para el usuario:', user.id);
-            const { error: updateError } = await supabase
-                .from('videos')
-                .update({ is_hero: false })
-                .match({ is_hero: true, user_id: user.id });
+            console.log('🔄 Marcando video como hero, desactivando antiguos globalmente usando RPC');
+            const { error: updateError } = await supabase.rpc('unset_hero_videos');
             
             if (updateError) {
                 console.warn('⚠️ Advertencia al resetear hero videos:', updateError.message);
