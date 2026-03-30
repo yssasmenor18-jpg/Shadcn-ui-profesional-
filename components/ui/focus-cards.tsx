@@ -124,7 +124,7 @@ const Card = React.memo(
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              src={card.src}
+              src={card.src || null}
               alt={card.title}
               className="object-cover absolute inset-0 w-full h-full"
             />

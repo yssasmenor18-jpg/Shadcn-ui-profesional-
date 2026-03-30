@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { signOut } from '../login/actions'
-import { DashboardNav, MobileNav } from '@/components/dashboard-nav'
+import { DashboardNav, MobileNav } from '@/components/navigation'
 
 export default async function DashboardLayout({
     children,

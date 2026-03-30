@@ -34,23 +34,19 @@ export async function middleware(request: NextRequest) {
 
     // --- API AUDITING (Guardián) ---
     if (request.nextUrl.pathname.startsWith('/api')) {
-        const ip = request.headers.get('x-forwarded-for') || request.ip || 'unknown'
+        const ip = request.headers.get('x-forwarded-for') || (request as any).ip || 'unknown'
         const userAgent = request.headers.get('user-agent') || 'unknown'
 
-        // Log request to api_logs table
-        // Note: Using await here ensures the log is recorded before the request proceeds,
-        // which is safer for auditing but adds small latency.
-        try {
-            await supabase.from('api_logs').insert({
-                method: request.method,
-                url: request.nextUrl.pathname,
-                user_id: user?.id,
-                ip_address: ip,
-                user_agent: userAgent
-            })
-        } catch (error) {
-            console.error('Audit Log Error:', error)
-        }
+        // Log request to api_logs table - REMOVE await to prevent blocking the middleware
+        supabase.from('api_logs' as any).insert({
+            method: request.method,
+            url: request.nextUrl.pathname,
+            user_id: user?.id,
+            ip_address: ip,
+            user_agent: userAgent
+        }).then(({ error }) => {
+            if (error) console.error('Audit Log Error:', error)
+        })
 
         // --- API AUTH PROTECTION ---
         // Protected routes (everything except auth-related API or public ones)
@@ -58,6 +54,7 @@ export async function middleware(request: NextRequest) {
             request.nextUrl.pathname === '/api/public' // example
 
         if (!user && !isPublicApi) {
+
             return NextResponse.json(
                 { error: 'Unauthorized access to API' },
                 { status: 401 }
