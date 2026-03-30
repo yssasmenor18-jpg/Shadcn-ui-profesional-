@@ -20,7 +20,7 @@ export async function PATCH(
         // Si estamos poniendo este video como hero, quitar el hero a los demás
         // debido a la restricción de clave única is_hero=true, y usando RPC para saltear RLS
         if (values.is_hero) {
-            await supabase.rpc('unset_hero_videos');
+            await (supabase as any).rpc('unset_hero_videos');
         }
 
         const { data: video, error } = await supabase

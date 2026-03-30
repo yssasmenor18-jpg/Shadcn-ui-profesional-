@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         }
 
         // 1. Quitar el estado de hero a cualquier video que lo tenga globalmente, saltando RLS
-        const { error: resetError } = await supabase.rpc('unset_hero_videos');
+        const { error: resetError } = await (supabase as any).rpc('unset_hero_videos');
 
         if (resetError) {
             console.error('Error resetting hero video:', resetError)
