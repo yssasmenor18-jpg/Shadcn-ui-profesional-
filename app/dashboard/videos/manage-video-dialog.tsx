@@ -32,7 +32,7 @@ import { Textarea } from "@/components/ui/textarea"
 export interface VideoItem {
     id: string
     title: string
-    description?: string
+    description?: string | null
     video_url: string
     thumbnail_url?: string
     category: string
@@ -239,7 +239,7 @@ export function ManageVideoDialog({
                             <Textarea
                                 id="description"
                                 name="description"
-                                defaultValue={video?.description}
+                                defaultValue={video?.description ?? undefined}
                                 placeholder="Cuéntanos de qué trata..."
                                 className="bg-[#1e293b] border-slate-700 focus:ring-purple-500 text-white min-h-[80px] resize-none"
                             />
