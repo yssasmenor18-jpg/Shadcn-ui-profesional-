@@ -116,7 +116,7 @@ export default async function Home() {
 
       {/* HERO SECTION */}
       <section className="w-full">
-        <HeroVideo video={heroVideo} />
+        <HeroVideo video={heroVideo as any} />
       </section>
 
       {/* GALLERY SECTION */}
