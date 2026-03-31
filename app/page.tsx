@@ -120,12 +120,17 @@ export default async function Home() {
       </section>
 
       {/* GALLERY SECTION */}
-      <section className="w-full max-w-7xl mx-auto px-4 py-16 z-10 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl md:text-3xl font-bold text-white tracking-tight">
-            Más Visiones
-          </h2>
-          <div className="h-[1px] flex-1 bg-white/10 ml-6 hidden md:block" />
+      <section className="w-full max-w-7xl mx-auto px-6 py-20 z-10 animate-in fade-in slide-in-from-bottom-12 duration-1000">
+        <div className="flex flex-col mb-12 gap-2">
+          <div className="flex items-center gap-4">
+            <h2 className="text-lg md:text-xl font-bold text-white/90 tracking-[0.2em] uppercase">
+              Mis Visiones
+            </h2>
+            <div className="h-[1px] flex-1 bg-gradient-to-r from-white/20 to-transparent" />
+          </div>
+          <p className="text-neutral-500 text-sm font-light tracking-wide">
+            Colección de momentos y perspectivas únicas.
+          </p>
         </div>
 
         {/* Grid de videos */}

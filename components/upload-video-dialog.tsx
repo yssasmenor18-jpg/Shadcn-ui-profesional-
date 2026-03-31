@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Loader2, Upload, Video as VideoIcon, Image as ImageIcon } from 'lucide-react'
+import { Loader2, Upload, Video as VideoIcon, Image as ImageIcon, Star } from 'lucide-react'
 
 export function UploadVideoDialog() {
     const [open, setOpen] = useState(false)
@@ -54,6 +54,7 @@ export function UploadVideoDialog() {
             const category = isNewCategory
                 ? (formData.get('custom-category') as string)
                 : (formData.get('category') as string)
+            const isHero = formData.get('is_hero') === 'on'
 
             if (!videoFile || !thumbnailFile) {
                 alert('Por favor selecciona un video y una portada')
@@ -100,7 +101,8 @@ export function UploadVideoDialog() {
                     category,
                     video_url: videoUrl,
                     thumbnail_url: thumbUrl,
-                    user_id: user.id
+                    user_id: user.id,
+                    is_hero: isHero
                 })
 
             if (dbError) throw dbError
@@ -192,21 +194,25 @@ export function UploadVideoDialog() {
                         </div>
                     </div>
 
-                    <div className="grid gap-2">
-                        <Label htmlFor="thumbnail">Imagen de Portada</Label>
-                        <div className="flex items-center gap-2 p-2 border border-dashed border-slate-700 rounded-md hover:bg-slate-800/50 cursor-pointer transition-colors relative">
-                            <ImageIcon className="w-5 h-5 text-purple-400" />
-                            <input type="file" id="thumbnail" name="thumbnail" accept="image/*" required className="absolute inset-0 opacity-0 cursor-pointer" />
-                            <span className="text-sm text-slate-400">Clic para seleccionar imagen...</span>
-                        </div>
+                    <div className="flex items-center space-x-2 py-2 px-1 rounded-lg hover:bg-white/5 transition-colors group">
+                        <input
+                            type="checkbox"
+                            id="is_hero"
+                            name="is_hero"
+                            className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-purple-600 focus:ring-purple-500 focus:ring-offset-slate-900"
+                        />
+                        <Label htmlFor="is_hero" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2 cursor-pointer">
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400/20 group-hover:fill-yellow-400/40 transition-all" />
+                            Usar como video principal (Hero)
+                        </Label>
                     </div>
 
-                    <DialogFooter>
-                        <Button type="submit" disabled={isLoading} className="w-full bg-gradient-to-r from-indigo-500 to-purple-600">
+                    <DialogFooter className="pt-2">
+                        <Button type="submit" disabled={isLoading} className="w-full bg-gradient-to-r from-indigo-500 via-purple-600 to-indigo-500 bg-[length:200%_auto] hover:bg-right transition-all duration-500 shadow-xl shadow-purple-500/20">
                             {isLoading ? (
                                 <>
-                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    Subiendo (esto puede tardar)...
+                                    <Loader2 className="mr-2 h-4 h-4 animate-spin" />
+                                    Publicando visión...
                                 </>
                             ) : (
                                 'Publicar Video'
