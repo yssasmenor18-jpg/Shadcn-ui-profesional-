@@ -73,12 +73,21 @@ export function HeroVideo({ video }: { video: Video }) {
         })
     }
 
+    let align = 'center center';
+    if (video.video_url && video.video_url.includes('#align-')) {
+        const alignParam = video.video_url.split('#align-')[1]; // top, bottom, center
+        if (alignParam === 'top') align = 'center top';
+        if (alignParam === 'bottom') align = 'center bottom';
+        if (alignParam === 'center') align = 'center center';
+    }
+
     return (
         <div className="relative w-full h-[70vh] overflow-hidden bg-black group">
             {/* Video Background */}
             <video
                 ref={videoRef}
                 className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-700"
+                style={{ objectPosition: align }}
                 src={video.video_url}
                 // Quitamos 'autoPlay' nativo y 'muted' del tag para controlarlo manualmente por JS
                 // para intentar forzar el sonido, aunque dejamos playsInline para móviles.

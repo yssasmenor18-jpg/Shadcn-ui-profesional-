@@ -58,6 +58,7 @@ export function ManageVideoDialog({
     const [internalOpen, setInternalOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
     const [isHero, setIsHero] = useState(video?.is_hero || false)
+    const [heroAlignment, setHeroAlignment] = useState('center')
 
     const router = useRouter()
     const supabase = createClient()
@@ -70,6 +71,11 @@ export function ManageVideoDialog({
     useEffect(() => {
         if (open) {
             setIsHero(video?.is_hero || false)
+            let align = 'center'
+            if (video?.video_url?.includes('#align-')) {
+                align = video.video_url.split('#align-')[1]
+            }
+            setHeroAlignment(align)
         }
     }, [open, video])
 
@@ -120,6 +126,9 @@ export function ManageVideoDialog({
             // 4. Guardar en Base de Datos
             const url = isEditing ? `/api/videos/${video.id}` : '/api/videos'
             const method = isEditing ? 'PATCH' : 'POST'
+            
+            const baseVideoUrl = videoUrl.split('#')[0]
+            const finalVideoUrl = `${baseVideoUrl}#align-${heroAlignment}`
 
             const response = await fetch(url, {
                 method: method,
@@ -128,7 +137,7 @@ export function ManageVideoDialog({
                     title,
                     description,
                     category,
-                    video_url: videoUrl,
+                    video_url: finalVideoUrl,
                     thumbnail_url: thumbUrl,
                     is_hero: isHero
                 }),
@@ -271,19 +280,46 @@ export function ManageVideoDialog({
                             </div>
                         </div>
 
-                        <div className="flex items-center justify-between p-4 bg-slate-800/40 rounded-2xl border border-slate-700/50">
-                            <div className="flex items-center gap-2">
-                                <Star className={`h-5 w-5 ${isHero ? "text-amber-500 fill-amber-500" : "text-slate-500"}`} />
-                                <div className="text-left">
-                                    <p className="text-sm font-bold text-white leading-none">Video Principal (Hero)</p>
-                                    <p className="text-[10px] text-slate-400 mt-1">Aparecerá en el inicio de la web.</p>
+                        <div className="flex flex-col gap-4 p-4 bg-slate-800/40 rounded-2xl border border-slate-700/50">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <Star className={`h-5 w-5 ${isHero ? "text-amber-500 fill-amber-500" : "text-slate-500"}`} />
+                                    <div className="text-left">
+                                        <p className="text-sm font-bold text-white leading-none">Video Principal (Hero)</p>
+                                        <p className="text-[10px] text-slate-400 mt-1">Aparecerá en el inicio de la web.</p>
+                                    </div>
+                                </div>
+                                <Switch
+                                    checked={isHero}
+                                    onCheckedChange={setIsHero}
+                                    className="data-[state=checked]:bg-amber-500"
+                                />
+                            </div>
+
+                            {/* Selector de Alineación */}
+                            <div className="space-y-2 mt-2 pt-4 border-t border-slate-700/50">
+                                <Label className="text-sm font-semibold text-slate-200">Encuadre del Video</Label>
+                                <p className="text-[10px] text-slate-400 mb-2">Ajusta cómo se corta el video si no entra completo en la pantalla.</p>
+                                <div className="flex gap-2">
+                                    {[
+                                        { id: 'top', label: 'Ver Arriba' },
+                                        { id: 'center', label: 'Centrado' },
+                                        { id: 'bottom', label: 'Ver Abajo' },
+                                    ].map((opt) => (
+                                        <div
+                                            key={opt.id}
+                                            onClick={() => setHeroAlignment(opt.id)}
+                                            className={`flex-1 text-center py-2 px-3 rounded-lg text-xs font-medium cursor-pointer transition-all ${
+                                                heroAlignment === opt.id 
+                                                    ? 'bg-purple-600 text-white shadow-md cursor-default' 
+                                                    : 'bg-[#1e293b] text-slate-400 hover:bg-slate-700 hover:text-white border border-slate-700'
+                                            }`}
+                                        >
+                                            {opt.label}
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-                            <Switch
-                                checked={isHero}
-                                onCheckedChange={setIsHero}
-                                className="data-[state=checked]:bg-amber-500"
-                            />
                         </div>
 
                         <Button
