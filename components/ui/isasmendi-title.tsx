@@ -9,68 +9,84 @@ const HALF_ROTATION_RANGE = 32.5 / 2
 export const IsasmendiTitle = () => {
     const ref = useRef<HTMLDivElement>(null)
 
-    // Valores de movimiento del mouse
-    const x = useMotionValue(0)
-    const y = useMotionValue(0)
-
-    // Suavizado (Spring physics) para que el movimiento se sienta "con peso" y profesional
-    const xSpring = useSpring(x, { stiffness: 300, damping: 30 })
-    const ySpring = useSpring(y, { stiffness: 300, damping: 30 })
-
-    // Transformar coordenadas del mouse en grados de rotación
-    const transform = useMotionTemplate`rotateX(${xSpring}deg) rotateY(${ySpring}deg)`
+    // Valores de rotación por el mouse (rebautizados para no chocar con x,y del drag)
+    const mouseRotationX = useMotionValue(0)
+    const mouseRotationY = useMotionValue(0)
+    
+    const xSpring = useSpring(mouseRotationX, { stiffness: 300, damping: 30 })
+    const ySpring = useSpring(mouseRotationY, { stiffness: 300, damping: 30 })
 
     const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         if (!ref.current) return
-
         const rect = ref.current.getBoundingClientRect()
-
-        const width = rect.width
-        const height = rect.height
-
         const mouseX = (e.clientX - rect.left) * ROTATION_RANGE
         const mouseY = (e.clientY - rect.top) * ROTATION_RANGE
-
-        const rX = (mouseY / height - HALF_ROTATION_RANGE) * -1
-        const rY = mouseX / width - HALF_ROTATION_RANGE
-
-        x.set(rX)
-        y.set(rY)
+        const rX = (mouseY / rect.height - HALF_ROTATION_RANGE) * -1
+        const rY = mouseX / rect.width - HALF_ROTATION_RANGE
+        mouseRotationX.set(rX)
+        mouseRotationY.set(rY)
     }
 
     const handleMouseLeave = () => {
-        x.set(0)
-        y.set(0)
+        mouseRotationX.set(0)
+        mouseRotationY.set(0)
     }
 
     return (
         <motion.div
             ref={ref}
+            drag
+            dragSnapToOrigin={false}
+            dragElastic={0.1}
+            dragMomentum={false}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             style={{
                 transformStyle: "preserve-3d",
-                transform,
+                rotateX: xSpring,
+                rotateY: ySpring,
             }}
-            className="relative cursor-default"
+            className="relative cursor-grab active:cursor-grabbing select-none"
         >
-            <h1
+            <div
                 style={{
                     transform: "translateZ(50px)",
                 }}
-                className="text-4xl md:text-8xl font-black text-center tracking-tighter bg-clip-text text-transparent bg-gradient-to-b from-white via-white to-neutral-400 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)] transition-all duration-300"
+                className="flex flex-col items-center"
             >
-                ISASMENDI
-                <span className="block text-2xl md:text-4xl font-light tracking-[0.5em] text-neutral-400 mt-2">
-                    VISIONES
-                </span>
-            </h1>
+                <h1
+                    style={{
+                        WebkitTextStroke: "1px black",
+                    }}
+                    className="text-5xl md:text-[7.5rem] font-black text-center tracking-tighter text-white drop-shadow-[0_20px_40px_rgba(0,0,0,0.7)] transition-all duration-300 selection:bg-white selection:text-black leading-none"
+                >
+                    ISASMENDI
+                </h1>
+                
+                <div className="flex items-center justify-center gap-3 md:gap-5 mt-2 md:mt-4 w-full px-4">
+                    <motion.div 
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: "3rem", opacity: 0.4 }}
+                        transition={{ delay: 0.5, duration: 1 }}
+                        className="h-[1px] bg-gradient-to-r from-transparent to-white hidden md:block" 
+                    />
+                    <span className="text-[10px] md:text-sm font-light tracking-[1.5em] text-white/70 uppercase pl-[1.5em] whitespace-nowrap">
+                        V I S I O N E S
+                    </span>
+                    <motion.div 
+                        initial={{ width: 0, opacity: 0 }}
+                        animate={{ width: "3rem", opacity: 0.4 }}
+                        transition={{ delay: 0.5, duration: 1 }}
+                        className="h-[1px] bg-gradient-to-l from-transparent to-white hidden md:block" 
+                    />
+                </div>
+            </div>
 
             {/* Capa de brillo extra dinámica */}
             <motion.div
                 style={{
                     transform: "translateZ(20px)",
-                    opacity: useMotionTemplate`${Math.abs(Number(xSpring)) * 0.5}`, // Brilla más al moverse
+                    opacity: xSpring, // Usando xSpring directamente como control de brillo sutil
                 }}
                 className="absolute inset-0 bg-white/5 blur-3xl rounded-full -z-10"
             />
