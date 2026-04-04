@@ -62,17 +62,21 @@ export async function middleware(request: NextRequest) {
         }
     }
 
-    // --- DASHBOARD PROTECTION ---
-    if (!user && request.nextUrl.pathname.startsWith('/dashboard')) {
+    // --- AUTH PROTECTION GATE ---
+    const publicPaths = ['/login', '/api/auth', '/auth/callback']
+    const isPublicPath = publicPaths.some(path => request.nextUrl.pathname.startsWith(path))
+
+    // 1. Redirect unauthenticated users to login
+    if (!user && !isPublicPath) {
         const url = request.nextUrl.clone()
         url.pathname = '/login'
         return NextResponse.redirect(url)
     }
 
-    // Redirect to dashboard if already logged in and trying to access login
+    // 2. Redirect authenticated users away from login to the welcome portal
     if (user && request.nextUrl.pathname === '/login') {
         const url = request.nextUrl.clone()
-        url.pathname = '/dashboard' // Fixed redirect to dashboard
+        url.pathname = '/welcome'
         return NextResponse.redirect(url)
     }
 

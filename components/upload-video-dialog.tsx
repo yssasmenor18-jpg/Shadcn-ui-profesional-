@@ -49,6 +49,10 @@ export function UploadVideoDialog() {
             const formData = new FormData(e.currentTarget)
             const title = formData.get('title') as string
             const description = formData.get('description') as string
+            const camera = formData.get('camera') as string
+            const lens = formData.get('lens') as string
+            const lighting = formData.get('lighting') as string
+            const render_engine = formData.get('render_engine') as string
             const videoFile = (formData.get('video') as File)
             const thumbnailFile = (formData.get('thumbnail') as File)
             const category = isNewCategory
@@ -98,6 +102,10 @@ export function UploadVideoDialog() {
                 .insert({
                     title,
                     description,
+                    camera,
+                    lens,
+                    lighting,
+                    render_engine,
                     category,
                     video_url: videoUrl,
                     thumbnail_url: thumbUrl,
@@ -181,8 +189,30 @@ export function UploadVideoDialog() {
                     </div>
 
                     <div className="grid gap-2">
-                        <Label htmlFor="description">Descripción</Label>
-                        <Input id="description" name="description" placeholder="Cuéntanos de qué trata..." className="bg-slate-800 border-slate-700 focus:ring-indigo-500" />
+                        <Label htmlFor="description">Análisis del Director</Label>
+                        <Input id="description" name="description" placeholder="Cuéntanos el enfoque creativo de esta visión..." className="bg-slate-800 border-slate-700 focus:ring-indigo-500" />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="camera" className="text-xs text-slate-400">Virtual Camera</Label>
+                            <Input id="camera" name="camera" placeholder="Ej: ARRI Alexa 65" className="bg-slate-800 border-slate-700 focus:ring-indigo-500 text-xs" />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="lens" className="text-xs text-slate-400">Lens Setup</Label>
+                            <Input id="lens" name="lens" placeholder="Ej: Hasselblad 65mm f/1.6" className="bg-slate-800 border-slate-700 focus:ring-indigo-500 text-xs" />
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="lighting" className="text-xs text-slate-400">Lighting Design</Label>
+                            <Input id="lighting" name="lighting" placeholder="Ej: Rembrandt 3-point" className="bg-slate-800 border-slate-700 focus:ring-indigo-500 text-xs" />
+                        </div>
+                        <div className="grid gap-2">
+                            <Label htmlFor="render_engine" className="text-xs text-slate-400">Render Engine</Label>
+                            <Input id="render_engine" name="render_engine" placeholder="Ej: Veo 3.1 Cinematic" className="bg-slate-800 border-slate-700 focus:ring-indigo-500 text-xs" />
+                        </div>
                     </div>
 
                     <div className="grid gap-2">
@@ -201,7 +231,7 @@ export function UploadVideoDialog() {
                             name="is_hero"
                             className="w-4 h-4 rounded border-slate-700 bg-slate-800 text-purple-600 focus:ring-purple-500 focus:ring-offset-slate-900"
                         />
-                        <Label htmlFor="is_hero" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 flex items-center gap-2 cursor-pointer">
+                        <Label htmlFor="is_hero" className="text-sm font-medium leading-none flex items-center gap-2 cursor-pointer cursor-allowed opacity-100">
                             <Star className="w-4 h-4 text-yellow-400 fill-yellow-400/20 group-hover:fill-yellow-400/40 transition-all" />
                             Usar como video principal (Hero)
                         </Label>

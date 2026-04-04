@@ -13,50 +13,50 @@ const PLACEHOLDER_VIDEOS = [
   {
     id: 'demo-1',
     title: "Explora la Naturaleza",
-    description: "Un viaje visual por los paisajes más impresionantes del mundo.",
+    description: "Un viaje visual por los paisajes más impresionantes del mundo, capturado con una sensibilidad etérea y cinematográfica.",
     video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     thumbnail_url: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131?q=80&w=2070&auto=format&fit=crop",
-    category: "Naturaleza"
+    category: "Naturaleza",
+    camera: "Sony FX3 Emulation",
+    lens: "35mm Vintage Prime",
+    lighting: "Golden Hour Natural",
+    render_engine: "Veo 3.1"
   },
   {
     id: 'demo-2',
     title: "Viajes de Aventura",
-    description: "Descubre lo desconocido en esta serie de aventuras extremas.",
+    description: "Descubre lo desconocido en esta serie de aventuras extremas, donde la luz define el camino.",
     video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
     thumbnail_url: "https://images.unsplash.com/photo-1526772662000-3f88f10405ff?q=80&w=2074&auto=format&fit=crop",
-    category: "Aventura"
+    category: "Aventura",
+    camera: "Arri Alexa Mini LF",
+    lens: "50mm Anamorphic",
+    lighting: "High Contrast Noon",
+    render_engine: "Luma Dream Machine"
   },
   {
     id: 'demo-3',
     title: "Momentos Urbanos",
-    description: null,
+    description: "La geometría de la ciudad revelada a través de la lente, un estudio sobre la simetría y el caos.",
     video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
     thumbnail_url: "https://images.unsplash.com/photo-1514565131-fce0801e5785?q=80&w=2156&auto=format&fit=crop",
-    category: "Urbano"
+    category: "Urbano",
+    camera: "Red Komodo 6K",
+    lens: "24mm Wide Angle",
+    lighting: "Neon Night Simulation",
+    render_engine: "Runway Gen-3"
   },
   {
     id: 'demo-4',
     title: "El Futuro Tecnológico",
-    description: null,
+    description: "Una visión proactiva de la tecnología integrada en la vida cotidiana.",
     video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
     thumbnail_url: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?q=80&w=2070&auto=format&fit=crop",
-    category: "Tecnología"
-  },
-  {
-    id: 'demo-5',
-    title: "Arte Abstracto",
-    description: null,
-    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-    thumbnail_url: "https://images.unsplash.com/photo-1549490349-8643362247b5?q=80&w=2130&auto=format&fit=crop",
-    category: "Arte"
-  },
-  {
-    id: 'demo-6',
-    title: "Música en Vivo",
-    description: null,
-    video_url: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4",
-    thumbnail_url: "https://images.unsplash.com/photo-1501612780327-45045538702b?q=80&w=2070&auto=format&fit=crop",
-    category: "Música"
+    category: "Tecnología",
+    camera: "Virtual Studio Setup",
+    lens: "85mm Telephoto",
+    lighting: "Studio Softbox",
+    render_engine: "Midjourney + Kling"
   }
 ]
 
